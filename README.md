@@ -14,5 +14,8 @@ https://discord.gg/wx6tnUPRWx
 Video:
 https://vimeo.com/668487747/2eb1d45a19
 
+Url for custom showdown server(needs to be http for now):
+http://raw-showdown-test.herokuapp.com-80.psim.us
+
 pokemonshowdown-rl-trainer-f2p is free for most use cases and the source is available. The source code is published
 under the [Server Side Public License (SSPL) v1](LICENSE.txt).
