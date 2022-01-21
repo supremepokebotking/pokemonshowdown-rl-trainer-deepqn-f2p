@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var dataset_1 = require("./dataset");
+exports.array = dataset_1.array;
+exports.Dataset = dataset_1.Dataset;
+exports.zip = dataset_1.zip;
+var csv_dataset_1 = require("./datasets/csv_dataset");
+exports.CSVDataset = csv_dataset_1.CSVDataset;
+var text_line_dataset_1 = require("./datasets/text_line_dataset");
+exports.TextLineDataset = text_line_dataset_1.TextLineDataset;
+var readers_1 = require("./readers");
+exports.csv = readers_1.csv;
+exports.generator = readers_1.generator;
+var file_data_source_1 = require("./sources/file_data_source");
+exports.FileDataSource = file_data_source_1.FileDataSource;
+var url_data_source_1 = require("./sources/url_data_source");
+exports.URLDataSource = url_data_source_1.URLDataSource;
+var version_1 = require("./version");
+exports.version_data = version_1.version;
+//# sourceMappingURL=index.js.map
