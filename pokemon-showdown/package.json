@@ -1,0 +1,16 @@
+{
+  "name": "pokemon-battle-shell",
+  "version": "0.11.7",
+  "dependencies": {
+  },
+  "optionalDependencies": {
+  },
+  "secretDependencies": {
+  },
+  "engines": {
+  },
+  "scripts": {
+  },
+  "devDependencies": {
+  }
+}

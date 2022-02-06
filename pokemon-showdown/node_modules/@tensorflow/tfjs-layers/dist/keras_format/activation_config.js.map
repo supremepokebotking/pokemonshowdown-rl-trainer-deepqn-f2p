@@ -1,0 +1,1 @@
+{"version":3,"file":"activation_config.js","sourceRoot":"","sources":["../../src/keras_format/activation_config.ts"],"names":[],"mappings":";;AAUA,iCAA2C;AAK9B,QAAA,iBAAiB,GAAG,0BAAkB,CAAC;IAClD,KAAK,EAAE,aAAa,EAAE,QAAQ,EAAE,MAAM,EAAE,OAAO,EAAE,MAAM,EAAE,SAAS,EAAE,SAAS;IAC7E,UAAU,EAAE,UAAU,EAAE,MAAM;CAC/B,CAAC,CAAC"}
