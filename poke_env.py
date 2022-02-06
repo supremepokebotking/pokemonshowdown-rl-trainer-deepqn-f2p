@@ -238,7 +238,7 @@ class PokeSimEnv(gym.Env):
 
         return np.asarray(obs), reward, done, info
 
-    def reset(self, config={}, game_type=SINGLES, random_opponent=True, bot_style=None):
+    def reset(self, game_type=SINGLES, random_opponent=True, bot_style=None):
         params = self.get_params()
         params['config'] = self.reward_config
         if bot_style is None:

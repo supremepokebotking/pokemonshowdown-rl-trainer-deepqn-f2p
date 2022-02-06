@@ -4,7 +4,7 @@ import random
 
 env = PokeEnv()
 config = {}
-state = env.reset(config, random_opponent=False)
+state = env.reset(random_opponent=False)
 action2 = None
 rewards = 0
 steps = 0
@@ -17,7 +17,7 @@ all_rewards = []
 for i in range(25):
     print(i)
     done = False
-    state = env.reset(config, random_opponent=False)
+    state = env.reset(random_opponent=False)
     while not done:
     #    action1 = env.sample_actions()
         action, target = env.sample_actions(player)
