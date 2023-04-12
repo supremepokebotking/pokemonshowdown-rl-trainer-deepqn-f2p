@@ -250,3 +250,8 @@ class PokeDuelingDeepQNetworkUriah(nn.Module):
 
     def load_checkpoint(self):
         print('... loading checkpoinnt ...')
+        try:
+            self.load_state_dict(T.load(self.checkpoint_file))
+        except:
+            print('loading model with cpu')
+            self.load_state_dict(T.load(self.checkpoint_file, map_location=torch.device('cpu')))
