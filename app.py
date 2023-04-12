@@ -11,6 +11,25 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 
+import flask
+from flask import Flask
+from flask import request
+from flask_cors import CORS, cross_origin
+from dueling_deep_q_network_uriah import PokeDuelingDeepQNetworkUriah
+import numpy as np
+import torch as T
+
+app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
+#if fail ignore, only needed for colab
+try:
+    from flask_ngrok import run_with_ngrok
+    run_with_ngrok(app)
+except:
+    pass
+
 import numpy as np
 import json
 from dqn_agent import PokeDDQNAgentUriah
