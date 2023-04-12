@@ -1,7 +1,6 @@
 import numpy as np
 import torch as T
 from deep_q_network import PokeDeepQNetwork
-from deep_q_network_uriah import PokeDeepQNetworkUriah
 from dueling_deep_q_network_uriah import PokeDuelingDeepQNetworkUriah
 from replay_memory import PokeReplayBuffer
 
