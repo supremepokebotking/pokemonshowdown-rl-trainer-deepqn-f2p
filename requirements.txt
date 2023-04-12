@@ -6,3 +6,5 @@ gym
 pandas
 scipy
 seaborn
+flask
+flask_cors
