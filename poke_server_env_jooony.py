@@ -17,7 +17,7 @@ import json
 import copy
 import re
 
-DISPLAY_EVERYTHING = bool(int(os.environ.get('DISPLAY_EVERYTHING', 1)))
+DISPLAY_EVERYTHING = bool(int(os.environ.get('DISPLAY_EVERYTHING', 0)))
 ALWAYS_SHOW_SUMMARY = bool(int(os.environ.get('ALWAYS_SHOW_SUMMARY', 0)))
 CHOOSE_RANDOM_MOVE_FOR_INVALID_ACTION = bool(int(os.environ.get('CHOOSE_RANDOM_MOVE_FOR_INVALID_ACTION', 0)))
 PRINT_INVALID_CHOICE_MESSAGE = bool(int(os.environ.get('PRINT_INVALID_CHOICE_MESSAGE', 1)))
@@ -392,6 +392,8 @@ class EnvironState():
         self.display_everything = DISPLAY_EVERYTHING
         self.rewards = []
 
+    def update_reward_config(self, reward_config):
+        self.reward_config = reward_config
 
     def clear_everything(self):
         self.turns = 0
@@ -510,6 +512,8 @@ class EnvironState():
         self.should_self_print = should_print
         self.p2_is_random = p2_is_random
         self.gametype = gametype
+        #print('using reward', self.reward_config)
+        #time.sleep(6)
 
         if self.simulate != None:
             self.simulate.stdin.close()
@@ -552,7 +556,9 @@ class EnvironState():
         self.transcripto = []
         self.request_outputs = []
 
-        self.process_til_turn_1()
+        succeeded = self.process_til_turn_1()
+        if not succeeded:
+            self.reset(random_style, gametype, p2_is_random, should_print)
         # Register positional metrics immediately
 
     def close(self):
@@ -604,6 +610,9 @@ class EnvironState():
 
         is_player_1 = self.get_player_for_next_request() == 'p1'
         request_position = self.get_position_for_current_request(is_player_1)
+        action_index, target_enum = None, None
+        if request_position is not None:
+            action_index, target_enum = self.sample_actions(position=request_position, is_p1_perspective=is_player_1)
         if request_position is None:
             request_position = 'a'
 
@@ -643,6 +652,8 @@ class EnvironState():
             'field_summary':self.field_summary,
             'p1_summary':self.p1_summary,
             'p2_summary':self.p2_summary,
+            'sample_action':action_index,
+            'sample_target':target_enum,
             'raw_observations':raw_observations,
             'raw_labels':raw_labels,
             'twitch_summary':self.twitch_pending_summary,
@@ -813,11 +824,33 @@ class EnvironState():
     # we dont even know who we're fighting against. This would cripple
     # ai's decision on who to use. Lazy work around make ai p2, but then same
     # situation would arise in bot vs bot fights
+    
+
+    # Make non blocking until turn 1 processing is over.
+    # if reset not finished in 5 seconds, restart process
+    #https://stackoverflow.com/questions/375427/a-non-blocking-read-on-a-subprocess-pipe-in-python
     def process_til_turn_1(self):
+        import os
+        import time
+        import subprocess
+        os.set_blocking(self.simulate.stdout.fileno(), False)
+        time.sleep(2.0)
+        start = time.time()
         output = None
         seeking_encoders = True
         while output != '|turn|1':
-            output = self.simulate.stdout.readline().strip()
+            try:
+                output = self.simulate.stdout.readline()
+                #print(output)
+            except:
+                #print('failed to grab output')
+                time.sleep(0.01)
+                if time.time() > start + 5:
+                    os.set_blocking(self.simulate.stdout.fileno(), True)
+                    print('Failed to process turn 1, restarting')
+                    return False
+                continue
+            output = output.strip()
             # KeyError: 'Sirfetch’d'
             output = output.replace('’', '\'')
 #            print(output)
@@ -829,6 +862,13 @@ class EnvironState():
                 if seeking_encoders:
                     print(output)
 
+            time.sleep(0.01)
+            if time.time() > start + 5:
+                os.set_blocking(self.simulate.stdout.fileno(), True)
+                print('Failed to process turn 1, restarting')
+                return False
+        os.set_blocking(self.simulate.stdout.fileno(), True)
+        return True
 
             # turn 1 doesnt process update
 #            if output == 'update':
@@ -1220,6 +1260,7 @@ class EnvironState():
         elif self.random_style == RANDOM_STYLES.TIL_LAST_BREATH:
             weights = [action.get_till_last_breath_weight() for action, _ in actions_targets]
 #            print('using get_till_last_breath_weight distribution')
+        weights = [action.get_attack_priority_weight() for action, _ in actions_targets]
         weights = np.asarray(weights)/sum(weights)
 
         valid_moves = self.p1_valid_moves
@@ -1278,6 +1319,10 @@ class PokeSimEnv(gym.Env):
         print('use network',use_network_model)
 
 
+    def update_reward_config(self, reward_config):
+        self.reward_config = reward_config
+        self._state.update_reward_config(reward_config)
+
 
     def step(self, action_as_int, target_as_int, player_str):
 #        print('pre action_as_int',action_as_int)
@@ -1303,11 +1348,14 @@ class PokeSimEnv(gym.Env):
                         break
 
         if not selection_valid:
+            pl_str = 'p1'
+            if not is_player_1:
+                pl_str = 'p2'
             if PRINT_INVALID_CHOICE_MESSAGE:
                 print('Tried using %s, will not choose random action' % (action_enum))
-                print('p1 should availables: ', self._state.get_valid_moves_for_player(position=request_position, is_p1_perspective=is_player_1))
+                print('%s should availables: ' % pl_str, self._state.get_valid_moves_for_player(position=request_position, is_p1_perspective=is_player_1))
 
-            if CHOOSE_RANDOM_MOVE_FOR_INVALID_ACTION:
+            if CHOOSE_RANDOM_MOVE_FOR_INVALID_ACTION or not is_player_1:
                 old_action = action_enum
                 old_target = target_enum
                 action_index, target_enum = self._state.sample_actions(position=request_position, is_p1_perspective=is_player_1)
@@ -1316,7 +1364,7 @@ class PokeSimEnv(gym.Env):
                 action_enum = Action(valid_moves_for_gen[action_index])
                 print('Tried using %s, using %s instead' % (old_action, action_enum))
                 print('Target Tried using %s, using %s instead' % (old_target, target_enum))
-                print('p1 should availables: ', self._state.get_valid_moves_for_player(position=request_position, is_p1_perspective=is_player_1))
+                print('%s should availables: ' % pl_str, self._state.get_valid_moves_for_player(position=request_position, is_p1_perspective=is_player_1))
                 #Punish invalid moves
             invalid_move_neg_reward = -1
             # Punish struggle heavily
@@ -1345,6 +1393,8 @@ class PokeSimEnv(gym.Env):
          "field_summary": obs['field_summary'],
          "p1_summary": obs['p1_summary'],
          "p2_summary": obs['p2_summary'],
+         "sample_action": obs['sample_action'],
+         "sample_target": obs['sample_target'],
          "raw_observations": obs['raw_observations'],
          "raw_labels": obs['raw_labels'],
          "twitch_summary": obs['twitch_summary'],
@@ -1534,6 +1584,8 @@ class PokeSimEnv(gym.Env):
          "field_summary": obs['field_summary'],
          "p1_summary": obs['p1_summary'],
          "p2_summary": obs['p2_summary'],
+         "sample_action": obs['sample_action'],
+         "sample_target": obs['sample_target'],
          "twitch_summary": obs['twitch_summary'],
          "twitch_battle_summary": obs['twitch_battle_summary'],
          'cat_length':obs['cat_length'], 'full_obs_len':obs['full_obs_len'], 'raw_length':obs['raw_length'],
@@ -1556,7 +1608,8 @@ class PokeSimEnv(gym.Env):
 
     def seed(self, seed=None):
         self.np_random, seed1 = seeding.np_random(seed)
-        seed2 = seeding.hash_seed(seed1 + 1) % 2 ** 31
+        #seed2 = seeding.hash_seed(seed1 + 1) % 2 ** 31
+        seed2 = 1
         return [seed1, seed2]
 
     def close(self):
@@ -1660,6 +1713,10 @@ class PokeEnv(gym.Env):
             'user_id': self.user_id,
             'bot_id': self.bot_id
         }
+    
+    def update_reward_config(self, reward_config):
+        self.reward_config = reward_config
+        self.poke_sim_env.update_reward_config(reward_config)
 
 
     # Checks for least recently used bot to avoid clashes
