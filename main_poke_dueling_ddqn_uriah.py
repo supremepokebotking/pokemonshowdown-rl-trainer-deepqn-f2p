@@ -472,8 +472,8 @@ chkpt_dir = 'models/'
 round_robin_match_nums = DEFAULT_ROUND_ROBIN_GAMES
 round_combination_pairs = list(itertools.combinations(range(len(model_filenames)), 2))
 for i, j in round_combination_pairs:
-    p1_model_filename = models_filenames_model_filename[model_filenames[i]]
-    p2_model_filename = models_filenames_model_filename[model_filenames[j]]
+    p1_model_filename = model_filenames[i]
+    p2_model_filename = model_filenames[j]
     team1 = p1_model_filename
     team2 = p2_model_filename
     p1_model = PokeDuelingDeepQNetworkUriah(lr, n_actions, input_dims=input_dims,
