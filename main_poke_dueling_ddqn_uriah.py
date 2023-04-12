@@ -372,7 +372,7 @@ if __name__ == '__main__':
                 n_steps = 0
                 scores, eps_history, steps_array = [], [], []
                 print('\nBeginning sequence for the following config', fname,'\n')
-                model_filenames.append(fname)
+                model_filenames.append(agent.q_next.name)
 
                 for i in range(n_games):
                     done = False
