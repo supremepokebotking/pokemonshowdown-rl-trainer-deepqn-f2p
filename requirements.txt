@@ -8,3 +8,4 @@ scipy
 seaborn
 flask
 flask_cors
+pyngrok
