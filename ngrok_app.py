@@ -19,7 +19,8 @@ DEBUG = bool(int(os.environ.get('DEBUG', 1)))
 
 FLASK_PORT = int(os.environ.get('FLASK_PORT', 9797))
 
-
+#### Get your own Auth Token.
+#https://dashboard.ngrok.com/signup
 ngrok.set_auth_token("2OLlCYiya0rRpyNnhibEV9qZtX8_6H3qENJFfQTTFPsWBT8MG")
 public_url =  ngrok.connect(FLASK_PORT).public_url
 print(f"To acces the Gloable link please click {public_url}")
