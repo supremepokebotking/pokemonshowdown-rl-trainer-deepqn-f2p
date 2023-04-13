@@ -38,7 +38,7 @@ if not os.path.exists('datasetgen'):
 
 DEFAULT_BATCH_SIZE = 32
 DEFAULT_NUMBER_OF_TRAINING_GAMES = 2
-DEFAULT_ROUND_ROBIN_GAMES = 5
+DEFAULT_ROUND_ROBIN_GAMES = 2
 
 class NumpyEncoder(json.JSONEncoder):
     """ Special json encoder for numpy types """
@@ -257,7 +257,7 @@ model_param_configs = [
     },
 ]
 
-"""
+#"""
 
 reward_configs = {
     "config_ver_2": {
@@ -311,7 +311,7 @@ model_param_configs = [
         "n_games":1,
     },
 ]
-"""
+#"""
 
 result_scores_data = {
     
