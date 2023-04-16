@@ -24,7 +24,8 @@ Paypal: https://www.paypal.com/paypalme/supremepokebotking
 Since my work target different groups of people, I made separate Patreons and discords to not have one overbloated discord channel.
 
 ### General Patreon:  
-https://www.patreon.com/SupremePokeCreator
+https://www.patreon.com/supremepokebotkinggeneral
+
 Various Benefits Depending On Tier
 - Special Discord Support
 - Access to multiprocessing examples
@@ -33,6 +34,7 @@ Various Benefits Depending On Tier
 
 ### Content Creator Tiers
 https://patreon.com/SupremePokeCreator
+
 Various Benefits Depending On Tier
 - Early Access To Twitch Extension Usable With Other tools(In Development)
 - Early Access To Twitch Compatiable Poke Extension
@@ -41,7 +43,8 @@ Various Benefits Depending On Tier
 - Early Access To Twitch Compatiable Violet Extension
 
 ### Research Tiers
-https://patreon.com/SupremePokeCreator
+https://patreon.com/SupremePokeResearcher
+
 Various Benefits Depending On Tier
 - Access To Local Training via Docker Containers
 - Allowed To Request features needed for specific research
