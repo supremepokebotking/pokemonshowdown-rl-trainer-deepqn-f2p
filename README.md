@@ -15,7 +15,7 @@ https://colab.research.google.com/drive/1UtS4OITut-goa9L3nZn4IepgxhybkUPJ?usp=sh
 https://discord.gg/wx6tnUPRWx
 
 ## Video:
-https://vimeo.com/668487747/2eb1d45a19
+https://youtu.be/NGmTR7paC5Q
 
 ## Donations
 Paypal: https://www.paypal.com/paypalme/supremepokebotking
